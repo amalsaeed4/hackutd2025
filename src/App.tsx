@@ -4,8 +4,10 @@ import { SettingsProvider } from "@/context/SettingsContext"
 import { BottomNav } from "@/components/BottomNav"
 import { AuthPage } from "@/pages/AuthPage"
 import { PreferencesPage } from "@/pages/PreferencesPage"
+import { LoadingPage } from "@/pages/LoadingPage"
 import { SwipePage } from "@/pages/SwipePage"
 import { SearchPage } from "@/pages/SearchPage"
+import { MapPage } from "@/pages/MapPage"
 import { LikedPage } from "@/pages/LikedPage"
 import { SettingsPage } from "@/pages/SettingsPage"
 
@@ -18,6 +20,7 @@ function App() {
             <Route path="/" element={<AuthPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/preferences" element={<PreferencesPage />} />
+            <Route path="/loading" element={<LoadingPage />} />
             <Route path="/home" element={
               <div className="min-h-screen bg-background">
                 <SwipePage />
@@ -27,6 +30,12 @@ function App() {
             <Route path="/search" element={
               <div className="min-h-screen bg-background">
                 <SearchPage />
+                <BottomNav />
+              </div>
+            } />
+            <Route path="/map" element={
+              <div className="min-h-screen bg-background">
+                <MapPage />
                 <BottomNav />
               </div>
             } />

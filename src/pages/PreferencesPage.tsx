@@ -26,8 +26,8 @@ export function PreferencesPage() {
       mpgImportance: fuelEconomy,
       sportinessWeight: sportiness,
     })
-    // Navigate to the app
-    navigate("/home")
+    // Navigate to loading page
+    navigate("/loading")
   }
 
   const getSizeLabel = (value: number) => {

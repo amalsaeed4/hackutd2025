@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import { Heart } from "lucide-react"
 
 interface SwipeableCardProps {
   children: React.ReactNode
@@ -20,10 +21,13 @@ export function SwipeableCard({
   const [isDragging, setIsDragging] = useState(false)
   const [startPos, setStartPos] = useState({ x: 0, y: 0 })
   const [rotation, setRotation] = useState(0)
+  const [showHeart, setShowHeart] = useState(false)
+  const [showPass, setShowPass] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
   const SWIPE_THRESHOLD = 100
   const ROTATION_FACTOR = 0.1
+  const ANIMATION_THRESHOLD = 50
 
   useEffect(() => {
     if (!isDragging && (position.x !== 0 || position.y !== 0)) {
@@ -49,6 +53,10 @@ export function SwipeableCard({
 
     setPosition({ x: deltaX, y: deltaY })
     setRotation(deltaX * ROTATION_FACTOR)
+    
+    // Show animations based on swipe direction
+    setShowHeart(deltaX > ANIMATION_THRESHOLD)
+    setShowPass(deltaX < -ANIMATION_THRESHOLD)
   }
 
   const handleEnd = () => {
@@ -63,6 +71,7 @@ export function SwipeableCard({
       setPosition({ x: window.innerWidth, y: position.y })
       setRotation(30)
       setTimeout(() => {
+        setShowHeart(false)
         onSwipeRight?.()
         onSwipe?.("right")
       }, 300)
@@ -71,6 +80,7 @@ export function SwipeableCard({
       setPosition({ x: -window.innerWidth, y: position.y })
       setRotation(-30)
       setTimeout(() => {
+        setShowPass(false)
         onSwipeLeft?.()
         onSwipe?.("left")
       }, 300)
@@ -78,6 +88,8 @@ export function SwipeableCard({
       // Return to center
       setPosition({ x: 0, y: 0 })
       setRotation(0)
+      setShowHeart(false)
+      setShowPass(false)
     }
 
     setIsDragging(false)
@@ -138,7 +150,7 @@ export function SwipeableCard({
     <div
       ref={cardRef}
       className={cn(
-        "transition-transform duration-300 ease-out cursor-grab active:cursor-grabbing",
+        "relative transition-transform duration-300 ease-out cursor-grab active:cursor-grabbing",
         className
       )}
       style={{
@@ -153,6 +165,26 @@ export function SwipeableCard({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Heart Animation - Right Swipe */}
+      {showHeart && (
+        <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="animate-[scaleIn_0.2s_ease-out]">
+            <Heart className="w-24 h-24 text-red-500 fill-red-500 drop-shadow-lg" />
+          </div>
+        </div>
+      )}
+
+      {/* Pass Animation - Left Swipe */}
+      {showPass && (
+        <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="animate-[scaleIn_0.2s_ease-out]">
+            <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg px-8 py-4 border-4 border-gray-700">
+              <span className="text-white text-4xl font-bold tracking-wider">PASS</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {children}
     </div>
   )
