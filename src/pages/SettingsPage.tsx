@@ -1,11 +1,20 @@
+import { useNavigate } from "react-router-dom"
 import { useSettings } from "@/context/SettingsContext"
+import { useAuth } from "@/context/AuthContext"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
-import { Settings, RotateCcw } from "lucide-react"
+import { Settings, RotateCcw, LogOut } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function SettingsPage() {
   const { preferences, updatePreferences, resetPreferences } = useSettings()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/auth")
+  }
 
   const handleSliderChange = (key: keyof typeof preferences, value: number) => {
     updatePreferences({ [key]: value })
@@ -168,6 +177,30 @@ export function SettingsPage() {
                 </span>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Account Card */}
+        <Card className="mt-6 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">Account</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {user && (
+              <div className="text-sm">
+                <div className="text-gray-600 mb-1">Logged in as:</div>
+                <div className="font-semibold">{user.name}</div>
+                <div className="text-gray-500 text-xs mt-1">{user.email}</div>
+              </div>
+            )}
+            <Button
+              variant="destructive"
+              onClick={handleLogout}
+              className="w-full"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Log Out
+            </Button>
           </CardContent>
         </Card>
       </div>

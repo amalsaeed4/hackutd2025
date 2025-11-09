@@ -1,21 +1,46 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LogIn, UserPlus } from "lucide-react"
+import { useAuth } from "@/context/AuthContext"
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
+  const { login, isAuthenticated } = useAuth()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/preferences", { replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
+  // Don't render if already authenticated
+  if (isAuthenticated) {
+    return null
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Just navigate to preferences page - no actual authentication
-    navigate("/preferences")
+    setIsSubmitting(true)
+    
+    try {
+      // Fake authentication - always succeeds
+      await login(email, password, name)
+      navigate("/preferences")
+    } catch (error) {
+      // This should never happen with fake auth, but just in case
+      console.error("Login error:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -111,8 +136,8 @@ export function AuthPage() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" size="lg">
-              {isLogin ? "Sign In" : "Create Account"}
+            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
             </Button>
           </form>
 
